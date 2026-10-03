@@ -1,0 +1,238 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="FitnessPro">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#0a0c10">
+<title>FitnessPro</title>
+<style>
+:root{--bg:#0a0c10;--card:#12161d;--card2:#181d26;--line:#232a35;--ink:#e8ecf2;--mute:#7b8696;--acc:#10b981;--amb:#f59e0b;--org:#f97316;--bar:#2c3542}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 -apple-system,BlinkMacSystemFont,"Inter","Segoe UI",sans-serif}
+header{position:fixed;top:0;left:0;right:0;z-index:20;display:flex;justify-content:space-between;align-items:center;padding:calc(env(safe-area-inset-top) + 10px) 18px 10px;background:rgba(10,12,16,.82);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+.brand{display:flex;align-items:center;gap:9px;font-weight:700;font-size:20px;letter-spacing:-.3px;color:#fff}
+.brand svg{width:28px;height:28px}.brand path{stroke-dasharray:60;animation:ecg 1.6s ease-out}
+@keyframes ecg{from{stroke-dashoffset:60}to{stroke-dashoffset:0}}
+.menu{background:var(--card);border:1px solid var(--line);border-radius:12px;width:44px;height:44px;color:var(--ink);font-size:18px;display:grid;place-items:center;cursor:pointer}
+.scrim{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:21}
+.drawer{position:fixed;top:0;right:0;left:0;z-index:22;background:var(--card);border-bottom:1px solid var(--line);border-radius:0 0 22px 22px;padding:calc(env(safe-area-inset-top) + 66px) 16px 18px;animation:down .22s ease-out}
+@keyframes down{from{transform:translateY(-30px);opacity:0}to{transform:none;opacity:1}}
+.drawer button{display:flex;justify-content:space-between;align-items:center;width:100%;background:none;border:0;color:var(--ink);font:600 18px inherit;font-family:inherit;padding:16px 14px;border-radius:12px;cursor:pointer;text-align:left}
+.drawer .on{background:rgba(16,185,129,.12);color:var(--acc)}
+main{padding:calc(env(safe-area-inset-top) + 78px) 16px calc(40px + env(safe-area-inset-bottom));max-width:640px;margin:0 auto}
+h2{font-size:26px;margin:4px 0 4px;color:#fff;letter-spacing:-.4px}h3{font-size:14px;margin:0 0 10px;color:#fff}
+.sm{color:var(--mute);font-size:13px}.sub{margin:0 0 16px;color:var(--mute)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px;margin-bottom:12px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.tile{background:linear-gradient(160deg,var(--card2),var(--card));border:1px solid var(--line);border-radius:18px;padding:18px 16px;text-align:left;color:var(--ink);font:inherit;cursor:pointer}
+.tile b{display:block;font-size:18px;color:#fff;margin-bottom:2px}.tile.done{border-color:var(--acc)}
+.item{display:flex;justify-content:space-between;align-items:center;width:100%;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:15px 16px;margin-bottom:8px;color:var(--ink);font:inherit;text-align:left;cursor:pointer}
+input,textarea{font:inherit;font-size:16px;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px 12px;width:100%;min-width:0}
+input:focus,textarea:focus{outline:2px solid var(--acc);border-color:transparent}
+label{display:flex;justify-content:space-between;align-items:center;gap:10px;margin:8px 0}label input{width:120px;text-align:right}
+.big{font-size:40px;font-weight:700;line-height:1.1;color:#fff;letter-spacing:-1px}
+.pill{display:inline-block;padding:3px 11px;border-radius:99px;background:rgba(16,185,129,.14);color:var(--acc);font-size:13px;margin-left:8px}
+.prog{height:8px;background:var(--bg);border-radius:9px;overflow:hidden;margin:10px 0}.prog i{display:block;height:100%;border-radius:9px}
+.chart{width:100%;height:auto;max-height:190px}.chart text{fill:var(--mute);font-size:9px}
+.btn{cursor:pointer;border:0;border-radius:12px;padding:14px 16px;font:600 15px inherit;font-family:inherit;background:var(--acc);color:#04130d}
+.btn.alt{background:var(--card2);color:var(--ink);border:1px solid var(--line)}
+.row{display:flex;gap:8px;margin-top:12px}.row .btn{flex:1}
+.x{background:none;border:0;color:var(--mute);font-size:18px;cursor:pointer;padding:8px}
+.link{background:none;border:0;color:var(--mute);font:inherit;padding:0 0 8px;cursor:pointer}
+.ref{background:var(--bg);border-radius:10px;padding:10px 12px;margin-bottom:12px;font-size:13px;color:var(--mute)}
+.li{display:flex;justify-content:space-between;gap:8px;padding:10px 0;border-top:1px solid var(--line)}.li:first-of-type{border:0}
+.days{display:flex;gap:6px;margin:6px 0 10px}.days div{flex:1;text-align:center;padding:10px 0;border-radius:10px;border:1px solid var(--line);color:var(--mute);font-size:13px}.days .d{border-color:var(--acc);background:rgba(16,185,129,.15);color:var(--acc)}
+/* body figure */
+.figs{display:flex;justify-content:center;gap:18px}.figs>div{text-align:center;width:42%;max-width:150px}
+.bd{width:100%;height:auto}.bd .sil *{fill:#1b212b;stroke:#2c3542;stroke-width:.6}.bd .m{fill:#2c3542}.bd .P{fill:var(--acc);filter:drop-shadow(0 0 3px rgba(16,185,129,.55))}.bd .S{fill:var(--amb)}
+.legend{display:flex;justify-content:center;gap:16px;margin-top:8px;font-size:13px;color:var(--mute)}.legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:6px}
+/* sets + wheels */
+.sr{display:flex;align-items:center;gap:6px;margin-bottom:6px}
+.sr>button:first-child{flex:1;display:flex;justify-content:space-between;align-items:center;background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:12px 14px;color:var(--ink);font:inherit;cursor:pointer}
+.sr.on>button:first-child{border-color:var(--acc);background:rgba(16,185,129,.08)}
+.wheels{display:flex;gap:14px;justify-content:center;margin-top:12px}.wheels>div{width:130px;text-align:center}
+.box{position:relative;height:200px;margin-top:4px}
+.band{position:absolute;left:0;right:0;top:80px;height:40px;border-radius:10px;background:rgba(255,255,255,.08);pointer-events:none}
+.sc{position:relative;height:200px;overflow-y:scroll;scroll-snap-type:y mandatory;padding:80px 0;scrollbar-width:none;-webkit-overflow-scrolling:touch;-webkit-mask-image:linear-gradient(transparent,#000 32%,#000 68%,transparent);mask-image:linear-gradient(transparent,#000 32%,#000 68%,transparent);user-select:none;-webkit-user-select:none}
+.sc::-webkit-scrollbar{display:none}
+.sc div{height:40px;line-height:40px;scroll-snap-align:center;font-size:22px;color:var(--mute)}.sc .on{color:#fff;font-weight:600}
+@media(prefers-reduced-motion:reduce){.brand path,.drawer{animation:none}}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<input type="file" id="imp" accept="application/json" hidden>
+<script>
+/* ---------- data ---------- */
+const KEY='fitpro.v1', LO=1800, HI=2400, GOAL=4;
+// "Name|primary muscles|secondary muscles"
+const LIB={
+ Chest:['Dumbbell Chest Press|pecs|delts,triceps','Barbell Bench Press|pecs|delts,triceps','Chest Press Machine|pecs|delts,triceps','Cable Flyes|pecs|delts','Incline Dumbbell Press|pecs,delts|triceps','Incline Chest Press|pecs,delts|triceps','Machine Flyes|pecs|delts','Iso Lateral Decline Press|pecs|triceps'],
+ Back:['Lat Pulldown|lats|biceps,forearms','Seated Cable Row|lats,traps|biceps,reardelts','Face Pulls|reardelts|traps','Iso Lateral Front Lat Pulldown|lats|biceps','Straight Arm Pulldown|lats|triceps'],
+ Shoulder:['Overhead Dumbbell Press|delts|triceps,traps','Dumbbell Lateral Raises|delts|traps','EZ Bar Front Raises|delts|pecs','Rear Delt Machine|reardelts|traps','Front Cable Raises|delts|pecs','Overhead Barbell Press|delts|triceps,traps'],
+ Bicep:['Bicep Curl Machine|biceps|forearms','Dumbbell Hammer Curl|biceps,forearms|','Seated Incline Dumbbell Curl|biceps|forearms'],
+ Tricep:['Tricep Pushdown|triceps|forearms','Tricep Cable Extension|triceps|','Unilateral Pulldown|triceps|'],
+ Legs:['Goblet Squat|quads,glutes|adductors,abs','Smith Machine Squat|quads,glutes|adductors','Romanian Dumbbell Deadlift|hamstrings,glutes|lowerback,forearms','Leg Extensions|quads|','Lunges|quads,glutes|hamstrings,calves','Bulgarian Split Squat|quads,glutes|hamstrings','Lying Leg Curl|hamstrings|calves','Calf Raises|calves|','Hip Adductors|adductors|'],
+ Core:['Plank|abs|obliques,lowerback,delts','Cable Crunch|abs|obliques','Hanging Leg Raise|abs|obliques,quads,forearms']
+};
+const MAIN={Chest:'pecs',Back:'lats',Shoulder:'delts',Bicep:'biceps',Tricep:'triceps',Legs:'quads',Core:'abs'};
+const NAMES={pecs:'Chest',delts:'Shoulders',reardelts:'Rear delts',traps:'Traps',lats:'Lats',lowerback:'Lower back',biceps:'Biceps',triceps:'Triceps',forearms:'Forearms',abs:'Abs',obliques:'Obliques',glutes:'Glutes',quads:'Quads',hamstrings:'Hamstrings',calves:'Calves',adductors:'Inner thigh'};
+const INFO={}; Object.values(LIB).flat().forEach(s=>{const [n,p,q]=s.split('|');INFO[n]={p:p.split(','),s:q?q.split(','):[]}});
+const exNames=m=>[...LIB[m].map(s=>s.split('|')[0]),...(S.custom[m]||[])];
+const info=(n,m)=>INFO[n]||{p:[MAIN[m]],s:[]};
+
+/* body art: [muscle, path, mirrored?] — left-side paths are mirrored for the right side */
+const MIR='matrix(-1 0 0 1 100 0)', half=d=>`<path d="${d}"/><path d="${d}" transform="${MIR}"/>`;
+const BASE=`<g class="sil"><circle cx="50" cy="15" r="9"/><rect x="45" y="22" width="10" height="9"/><path d="M34 30 Q50 26 66 30 L62 90 Q50 96 38 90 Z"/>${half('M33 31 Q22 36 20 60 L18 100 L28 101 L33 70 L36 40 Z')}${half('M37 90 L33 140 L35 180 L44 182 L47 140 L50 92 Z')}${half('M33 182 L46 182 L47 188 L31 188 Z')}</g>`;
+const DELT='M30 31 Q24 36 25 46 Q30 49 35 44 L37 33 Z', ARM='M24 49 Q20 60 23 70 L30 69 Q32 58 31 48 Z', FORE='M22 72 Q19 85 21 98 L27 97 Q29 84 29 72 Z';
+const FRONT=[['pecs','M37 35 Q44 32 50 36 L50 53 Q42 57 35 50 Q33 41 37 35 Z',1],['delts',DELT,1],['biceps',ARM,1],['forearms',FORE,1],['abs','M44 56 L56 56 L56 86 Q50 90 44 86 Z'],['obliques','M35 53 L43 57 L43 86 L37 82 Q34 68 35 53 Z',1],['quads','M35 90 Q32 112 34 140 L43 140 Q44 115 44 92 Z',1],['adductors','M45 94 L50 92 L50 130 L46 130 Q44 112 45 94 Z',1]];
+const BACK=[['traps','M50 25 L40 32 Q38 40 42 48 L50 60 L58 48 Q62 40 60 32 Z'],['reardelts',DELT,1],['lats','M36 46 Q33 62 38 78 L47 80 L46 58 L42 50 Z',1],['triceps',ARM,1],['forearms',FORE,1],['lowerback','M45 62 L55 62 L56 84 L44 84 Z'],['glutes','M35 86 Q33 102 49 106 L50 86 Z',1],['hamstrings','M35 108 Q32 124 35 142 L44 142 Q47 124 49 108 Z',1],['calves','M35 148 Q32 162 36 176 L43 176 Q46 160 45 148 Z',1]];
+function Body(P,Q){
+  const c=m=>'m '+(P.includes(m)?'P':Q.includes(m)?'S':'');
+  const view=(set,l)=>`<div><svg viewBox="0 0 100 192" class="bd" role="img" aria-label="${l} view">${BASE}${set.map(([m,d,r])=>`<path class="${c(m)}" d="${d}"/>${r?`<path class="${c(m)}" d="${d}" transform="${MIR}"/>`:''}`).join('')}</svg><div class="sm">${l}</div></div>`;
+  return `<div class="figs">${view(FRONT,'Front')}${view(BACK,'Back')}</div><div class="legend"><span><i style="background:var(--acc)"></i>Primary</span><span><i style="background:var(--amb)"></i>Secondary</span></div>`;
+}
+
+/* ---------- storage + helpers ---------- */
+const DEF={weight:95,height:169,logs:[],meals:[],health:{},custom:{}};
+let S; try{S={...DEF,...JSON.parse(localStorage.getItem(KEY))}}catch{S={...DEF}}
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch{alert('Storage is full or blocked – export a backup.')}};
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const iso=d=>new Date(d.getTime()-d.getTimezoneOffset()*6e4).toISOString().slice(0,10);
+const ld=s=>new Date(s+'T00:00:00'), today=()=>iso(new Date());
+const addDays=(s,n)=>{const d=ld(s);d.setDate(d.getDate()+n);return iso(d)};
+const wkStart=s=>addDays(s,-ld(s).getDay());
+const fmt=s=>ld(s).toLocaleDateString(undefined,{day:'numeric',month:'short'});
+const kcalOn=d=>S.meals.filter(m=>m.date===d).reduce((a,m)=>a+m.kcal,0);
+const bmi=()=>S.weight/Math.pow(S.height/100,2);
+const bmiCat=b=>b<18.5?'Underweight':b<25?'Healthy':b<30?'Overweight':'Obese';
+const sets2=a=>a.map(s=>`${s.reps}×${s.weight}kg`).join(' · ');
+const prev=ex=>S.logs.filter(l=>l.ex===ex&&l.date<today()).sort((a,b)=>b.date.localeCompare(a.date)||b.id-a.id)[0]||null;
+const Ref=p=>p?`Last session (${fmt(p.date)}): ${sets2(p.sets)}${p.note?'<br>Note: '+esc(p.note):''}`:'No earlier session for this exercise yet.';
+
+/* ---------- state ---------- */
+let tab='dash', muscle=null, ex=null, draft=null, menu=false;
+function newDraft(){const p=prev(ex);draft={active:0,note:'',sets:p?p.sets.map(s=>({...s})):[0,1,2].map(()=>({weight:20,reps:10}))}}
+const WV={weight:[...Array(501)].map((_,i)=>i/2),reps:[...Array(50)].map((_,i)=>i+1)};
+
+/* ---------- components ---------- */
+const HB='<svg viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12h4l2-6 4 13 3-9 2 2h5"/></svg>';
+const Head=()=>`<header><div class="brand">${HB}<span>FitnessPro</span></div><button class="menu" data-a="menu" aria-label="Menu" aria-expanded="${menu}">${menu?'✕':'<svg width="20" height="14" viewBox="0 0 20 14" stroke="#e8ecf2" stroke-width="2" stroke-linecap="round"><path d="M1 1h18M1 7h18M1 13h18"/></svg>'}</button></header>
+${menu?`<div class="scrim" data-a="menu"></div><nav class="drawer">${[['dash','Dashboard'],['work','Workout'],['meal','Meal']].map(([k,n])=>`<button class="${tab===k?'on':''}" data-a="tab" data-t="${k}">${n}<span>›</span></button>`).join('')}</nav>`:''}`;
+function Bars(v,l,o={}){
+  const f=o.f||(x=>x), m=Math.max(...v,o.band?o.band[1]:0,o.min||1), n=v.length, y=x=>110-x/m*100;
+  const band=o.band?`<rect x="0" width="${n*40}" y="${y(o.band[1])}" height="${y(o.band[0])-y(o.band[1])}" fill="rgba(16,185,129,.12)"/>`:'';
+  const goal=o.goal?`<line x1="0" x2="${n*40}" y1="${y(o.goal)}" y2="${y(o.goal)}" stroke="var(--org)" stroke-dasharray="4 3"/>`:'';
+  const bars=v.map((x,i)=>{const h=x/m*100,bx=i*40+8;return `<rect x="${bx}" y="${110-h}" width="24" height="${h}" rx="4" fill="${i===n-1?'var(--acc)':'var(--bar)'}"/><text x="${bx+12}" y="${106-h}" text-anchor="middle">${x?f(x):''}</text><text x="${bx+12}" y="126" text-anchor="middle">${l[i]}</text>`}).join('');
+  return `<svg class="chart" viewBox="0 0 ${n*40} 134" role="img">${band}${goal}${bars}</svg>`;
+}
+const Log=l=>`<div class="li"><div><b>${esc(l.ex)}</b><div class="sm">${fmt(l.date)} · ${sets2(l.sets)}</div></div><button class="x" data-a="dellog" data-id="${l.id}" aria-label="Delete">✕</button></div>`;
+
+/* ---------- views ---------- */
+function Dash(){
+  const t=today(), b=bmi(), kc=kcalOn(t), h=S.health[t]||{}, ws=wkStart(t);
+  const dset=new Set(S.logs.map(l=>l.date)), in7=[...Array(7)].map((_,i)=>addDays(t,i-6));
+  const weeks=[...Array(8)].map((_,i)=>addDays(ws,(i-7)*7));
+  const cnt=weeks.map(w=>[...Array(7)].filter((_,d)=>dset.has(addDays(w,d))).length);
+  const dn=d=>ld(d).toLocaleDateString(undefined,{weekday:'short'});
+  const col=kc>=LO&&kc<=HI?'var(--acc)':kc>0?'var(--org)':'var(--bar)', k=x=>x>=1000?(x/1000).toFixed(1)+'k':x;
+  return `<h2>Dashboard</h2><p class="sub">Your week at a glance.</p>
+  <div class="card"><h3>Body</h3>
+   <label>Weight (kg)<input type="number" inputmode="decimal" step="0.1" data-f="bw" value="${S.weight}"></label>
+   <label>Height (cm)<input type="number" inputmode="numeric" data-f="bh" value="${S.height}"></label>
+   <p style="margin:14px 0 0"><span class="big" id="bmi">${b.toFixed(1)}</span><span class="pill" id="bmic">${bmiCat(b)}</span></p><p class="sm" style="margin:2px 0 0">BMI updates as you edit.</p></div>
+  <div class="card"><h3>This week (Sun–Thu)</h3><div class="days">${['Sun','Mon','Tue','Wed','Thu'].map((n,i)=>`<div class="${dset.has(addDays(ws,i))?'d':''}">${n}</div>`).join('')}</div>
+   <div class="prog"><i style="width:${Math.min(100,cnt[7]/GOAL*100)}%;background:var(--acc)"></i></div><p class="sm" style="margin:0">${cnt[7]} of ${GOAL} days logged</p></div>
+  <div class="card"><h3>Calories eaten today</h3><span class="big">${kc}</span> <span class="sm">target ${LO}–${HI} kcal</span>
+   <div class="prog"><i style="width:${Math.min(100,kc/HI*100)}%;background:${col}"></i></div>
+   <p class="sm" style="margin:0">${kc===0?'Nothing logged yet.':kc<LO?'Below target range.':kc<=HI?'Within target range.':'Above target range.'}</p></div>
+  <div class="card"><h3>Today's activity</h3><p class="sm" style="margin:0 0 4px">Enter manually until Apple Health sync is added.</p>
+   <label>Steps<input type="number" inputmode="numeric" data-f="steps" value="${h.steps||''}" placeholder="0"></label>
+   <label>Calories burned (kcal)<input type="number" inputmode="numeric" data-f="burn" value="${h.burn||''}" placeholder="0"></label></div>
+  <div class="card"><h3>Workout days per week</h3><p class="sm" style="margin:0">Dashed line = ${GOAL}-day goal. Labels are each week's start date.</p>${Bars(cnt,weeks.map(fmt),{goal:GOAL,min:5})}</div>
+  <div class="card"><h3>Calories eaten, last 7 days</h3>${Bars(in7.map(kcalOn),in7.map(dn),{band:[LO,HI],f:k})}</div>
+  <div class="card"><h3>Steps, last 7 days</h3>${Bars(in7.map(d=>(S.health[d]||{}).steps||0),in7.map(dn),{f:k,min:10000})}</div>
+  <div class="card"><h3>Backup</h3><p class="sm" style="margin:0">Data lives on this device. Export a copy now and then.</p><div class="row"><button class="btn alt" data-a="export">Export</button><button class="btn alt" data-a="import">Import</button></div></div>`;
+}
+function Work(){
+  const t=today();
+  if(!muscle) return `<h2>Workout</h2><p class="sub">Choose a muscle group.</p><div class="grid">${Object.keys(LIB).map(m=>{const d=S.logs.some(l=>l.muscle===m&&l.date===t);return `<button class="tile ${d?'done':''}" data-a="muscle" data-m="${m}"><b>${m}</b><span class="sm">${exNames(m).length} exercises${d?' · done today':''}</span></button>`}).join('')}</div>`;
+  if(!ex) return `<button class="link" data-a="back">‹ All muscle groups</button><h2>${muscle}</h2><p class="sub">Pick an exercise to log.</p>
+   ${exNames(muscle).map(e=>{const p=prev(e);return `<button class="item" data-a="ex" data-e="${esc(e)}"><span>${esc(e)}</span><span class="sm">${p?'last '+fmt(p.date)+' ':''}›</span></button>`}).join('')}
+   <div class="row"><input id="newex" placeholder="Add your own exercise" aria-label="New exercise name"><button class="btn alt" style="flex:0 0 auto" data-a="addex">Add</button></div>`;
+  const p=prev(ex), I=info(ex,muscle), done=S.logs.filter(l=>l.ex===ex&&l.date===t), nm=a=>a.map(m=>NAMES[m]).join(', ')||'–';
+  return `<button class="link" data-a="back">‹ ${muscle}</button><h2>${esc(ex)}</h2>
+  <div class="card">${Body(I.p,I.s)}<p class="sm" style="text-align:center;margin:10px 0 0"><b style="color:var(--acc)">${nm(I.p)}</b>${I.s.length?' · '+nm(I.s):''}</p></div>
+  <div class="card"><h3>Log sets</h3><div class="ref">${Ref(p)}</div>
+   ${draft.sets.map((s,i)=>`<div class="sr ${i===draft.active?'on':''}"><button data-a="act" data-i="${i}"><span>Set ${i+1}</span><span><b id="c-${i}-weight">${s.weight}</b> kg × <b id="c-${i}-reps">${s.reps}</b></span></button><button class="x" data-a="delset" data-i="${i}" aria-label="Remove set ${i+1}">✕</button></div>`).join('')}
+   <p class="sm" style="margin:12px 0 0;text-align:center">Swipe the wheels to set Set ${draft.active+1}</p>
+   <div class="wheels"><div><span class="sm">Weight (kg)</span><div class="box"><div class="band"></div><div class="sc" id="w-weight"></div></div></div><div><span class="sm">Reps</span><div class="box"><div class="band"></div><div class="sc" id="w-reps"></div></div></div></div>
+   <textarea id="note" rows="2" data-f="note" style="margin-top:14px" placeholder="Notes (form cues, how it felt)">${esc(draft.note)}</textarea>
+   <div class="row">${p?'<button class="btn alt" data-a="copy">Copy last</button>':''}<button class="btn alt" data-a="addset">Add set</button><button class="btn" data-a="save">Save</button></div></div>
+  <div class="card"><h3>Logged today</h3>${done.length?done.map(Log).join(''):'<p class="sm" style="margin:0">Nothing saved for this exercise today.</p>'}</div>`;
+}
+function Meal(){
+  const t=today(), list=S.meals.filter(m=>m.date===t);
+  return `<h2>Meal</h2><p class="sub">Log what you eat today.</p><div class="card"><h3>Add food</h3><div class="row" style="margin:0"><input id="mn" placeholder="Food" aria-label="Food"><input id="mk" type="number" inputmode="numeric" min="0" placeholder="kcal" style="max-width:100px" aria-label="Calories"><button class="btn" style="flex:0 0 auto" data-a="addmeal">Add</button></div></div>
+  <div class="card"><h3>Today · ${kcalOn(t)} kcal</h3>${list.length?list.map(m=>`<div class="li"><span>${esc(m.name)} <span class="sm">${m.kcal} kcal</span></span><button class="x" data-a="delmeal" data-id="${m.id}" aria-label="Delete">✕</button></div>`).join(''):'<p class="sm" style="margin:0">No meals logged today.</p>'}</div>`;
+}
+function render(){
+  $('#app').innerHTML=Head()+`<main>${tab==='dash'?Dash():tab==='work'?Work():Meal()}</main>`;
+  if(tab==='work'&&ex)initWheels();
+}
+
+/* ---------- iOS-style wheels ---------- */
+function mark(el,i){if(el._i!=null&&el.children[el._i])el.children[el._i].classList.remove('on');el.children[i].classList.add('on');el._i=i}
+function initWheels(){
+  ['weight','reps'].forEach(k=>{
+    const el=$('#w-'+k), vals=WV[k]; el.innerHTML=vals.map(v=>`<div>${v}</div>`).join('');
+    const i=Math.max(0,vals.indexOf(+draft.sets[draft.active][k])); el.scrollTop=i*40; mark(el,i);
+    el.onscroll=()=>{const j=Math.min(vals.length-1,Math.max(0,Math.round(el.scrollTop/40)));if(j===el._i)return;mark(el,j);draft.sets[draft.active][k]=vals[j];const c=$(`#c-${draft.active}-${k}`);if(c)c.textContent=vals[j]};
+  });
+}
+
+/* ---------- events ---------- */
+document.addEventListener('input',e=>{
+  const t=e.target,f=t.dataset.f; if(!f)return;
+  if(f==='note')draft.note=t.value;
+  else if(f==='steps'||f==='burn'){const d=today();S.health[d]={...S.health[d],[f]:+t.value||0};save()}
+  else{const v=parseFloat(t.value);if(!(v>0))return;if(f==='bw')S.weight=v;else S.height=v;save();$('#bmi').textContent=bmi().toFixed(1);$('#bmic').textContent=bmiCat(bmi())}
+});
+document.addEventListener('click',e=>{
+  const b=e.target.closest('[data-a]'); if(!b)return; const d=b.dataset,a=d.a;
+  if(a==='menu')menu=!menu;
+  else if(a==='tab'){tab=d.t;muscle=ex=null;menu=false;scrollTo(0,0)}
+  else if(a==='muscle')muscle=d.m;
+  else if(a==='back'){if(ex)ex=null;else muscle=null}
+  else if(a==='ex'){ex=d.e;newDraft();scrollTo(0,0)}
+  else if(a==='addex'){const n=$('#newex').value.trim();if(!n)return;(S.custom[muscle]=S.custom[muscle]||[]).push(n);save()}
+  else if(a==='act')draft.active=+d.i;
+  else if(a==='copy'){draft=Object.assign(draft,{active:0,sets:prev(ex).sets.map(s=>({...s}))})}
+  else if(a==='addset'){const l=draft.sets[draft.sets.length-1];draft.sets.push({...l});draft.active=draft.sets.length-1}
+  else if(a==='delset'){if(draft.sets.length>1){draft.sets.splice(+d.i,1);draft.active=Math.min(draft.active,draft.sets.length-1)}}
+  else if(a==='save'){S.logs.push({id:Date.now(),date:today(),muscle,ex,sets:draft.sets.map(s=>({reps:+s.reps,weight:+s.weight})),note:draft.note.trim()});save();newDraft()}
+  else if(a==='dellog'){S.logs=S.logs.filter(l=>l.id!==+d.id);save()}
+  else if(a==='addmeal'){const n=$('#mn').value.trim(),k=$('#mk').value;if(!n||k===''){alert('Enter a food name and calories.');return}S.meals.push({id:Date.now(),date:today(),name:n,kcal:+k});save()}
+  else if(a==='delmeal'){S.meals=S.meals.filter(m=>m.id!==+d.id);save()}
+  else if(a==='export'){const l=document.createElement('a');l.href=URL.createObjectURL(new Blob([JSON.stringify(S)],{type:'application/json'}));l.download='fitnesspro-backup-'+today()+'.json';l.click();return}
+  else if(a==='import'){$('#imp').click();return}
+  render();
+});
+$('#imp').addEventListener('change',async e=>{
+  try{const j=JSON.parse(await e.target.files[0].text());if(!Array.isArray(j.logs))throw 0;if(confirm('Replace current data with this backup?')){S={...DEF,...j};save();render()}}
+  catch{alert('That file is not a valid FitnessPro backup.')}
+  e.target.value='';
+});
+
+/* ---------- install helpers ---------- */
+(()=>{const c=document.createElement('canvas');c.width=c.height=180;const x=c.getContext('2d');x.fillStyle='#0a0c10';x.fillRect(0,0,180,180);x.strokeStyle='#10b981';x.lineWidth=11;x.lineCap=x.lineJoin='round';x.beginPath();x.moveTo(20,92);x.lineTo(60,92);x.lineTo(76,45);x.lineTo(106,138);x.lineTo(126,70);x.lineTo(140,84);x.lineTo(160,84);x.stroke();const l=document.createElement('link');l.rel='apple-touch-icon';l.href=c.toDataURL();document.head.appendChild(l)})();
+if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
+render();
+</script>
+</body>
+</html>
