@@ -50,6 +50,5 @@ document.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.id==='pin')
 let hidAt=0;document.addEventListener('visibilitychange',()=>{if(document.hidden)hidAt=Date.now();else if(S.lock&&Date.now()-hidAt>60000){locked=true;render()}});
 
 /* ---------- install helpers ---------- */
-try{(()=>{const c=document.createElement('canvas');c.width=c.height=180;const x=c.getContext('2d');x.fillStyle='#0a0c10';x.fillRect(0,0,180,180);x.strokeStyle='#10b981';x.lineWidth=11;x.lineCap=x.lineJoin='round';x.beginPath();x.moveTo(20,92);x.lineTo(60,92);x.lineTo(76,45);x.lineTo(106,138);x.lineTo(126,70);x.lineTo(140,84);x.lineTo(160,84);x.stroke();const l=document.createElement('link');l.rel='apple-touch-icon';l.href=c.toDataURL();document.head.appendChild(l)})()}catch{}
 if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
 render();
