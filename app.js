@@ -2,7 +2,7 @@
    Loaded by index.html. Edit this file for changes of this kind only. */
 
 /* ---------- events ---------- */
-document.addEventListener('input',e=>{const t=e.target;if(t.dataset.f==='note')draft.note=t.value;else if(t.id==='mn')mealName=t.value});
+document.addEventListener('input',e=>{const t=e.target;if(t.dataset.f==='note'){draft.note=t.value;const en=todayEntry();if(en){en.note=t.value.trim();saveSoon()}}else if(t.id==='mn')mealName=t.value});
 document.addEventListener('click',e=>{
   const b=e.target.closest('[data-a]'); if(!b)return; const d=b.dataset,a=d.a;
   if(a==='menu')menu=!menu;
@@ -18,11 +18,17 @@ document.addEventListener('click',e=>{
   else if(a==='back'){if(ex)ex=null;else muscle=null}
   else if(a==='ex'){ex=d.e;newDraft();scrollTo(0,0)}
   else if(a==='addex'){const n=$('#newex').value.trim();if(!n)return;(S.custom[muscle]=S.custom[muscle]||[]).push(n);save()}
-  else if(a==='se')draft.open=(draft.open&&draft.open.i===+d.i&&draft.open.k===d.k)?null:{i:+d.i,k:d.k};
-  else if(a==='copy'){draft=Object.assign(draft,{open:null,sets:prev(ex).sets.map(s=>({...s}))})}
-  else if(a==='addset'){const l=draft.sets[draft.sets.length-1];draft.sets.push({...l});draft.open=null}
-  else if(a==='delset'){if(draft.sets.length>1){draft.sets.splice(+d.i,1);draft.open=null}}
-  else if(a==='save'){S.logs.push({id:Date.now(),date:today(),muscle,ex,sets:draft.sets.map(s=>({reps:+s.reps,weight:+s.weight})),note:draft.note.trim()});save();newDraft()}
+  else if(a==='se')draft.open=draft.open===d.k?null:d.k;
+  else if(a==='tick'){
+    let en=todayEntry();if(!en){en={id:Date.now(),date:today(),muscle,ex,sets:[],note:''};S.logs.push(en)}
+    en.sets.push({weight:+draft.weight,reps:+draft.reps});if(draft.note.trim())en.note=draft.note.trim();
+    const p=prev(ex),nx=p&&p.sets[en.sets.length];if(nx){draft.weight=nx.weight;draft.reps=nx.reps}
+    draft.open=null;save();startRest();
+  }
+  else if(a==='delset'){const en=todayEntry();if(en){en.sets.splice(+d.i,1);if(!en.sets.length)S.logs=S.logs.filter(l=>l!==en);save()}}
+  else if(a==='rskip'){rest=null;clearInterval(rt)}
+  else if(a==='radd'){if(rest&&!rest.done){rest.end+=15000;rest.total+=15}}
+  else if(a==='hidebmi'){S.hideBmi=!S.hideBmi;save()}
   else if(a==='dellog'){S.logs=S.logs.filter(l=>l.id!==+d.id);save()}
   else if(a==='addmeal'){const n=$('#mn').value.trim();if(!n||!mealKcal){alert('Enter a food name and set the calories.');return}S.meals.push({id:Date.now(),date:mealDay||today(),name:n,kcal:+mealKcal});mealName='';medit=false;save()}
   else if(a==='delmeal'){S.meals=S.meals.filter(m=>m.id!==+d.id);save()}
@@ -35,6 +41,18 @@ $('#imp').addEventListener('change',async e=>{
   catch{alert('That file is not a valid FitnessPro backup.')}
   e.target.value='';
 });
+
+/* ---------- rest timer ---------- */
+let AC=null;
+function unlockAudio(){try{AC=AC||new (window.AudioContext||window.webkitAudioContext)();if(AC.state==='suspended')AC.resume()}catch{}}
+function beep(){try{unlockAudio();for(let i=0;i<3;i++){const o=AC.createOscillator(),g=AC.createGain();o.connect(g);g.connect(AC.destination);o.frequency.value=880;const t=AC.currentTime+i*.28;g.gain.setValueAtTime(.25,t);g.gain.exponentialRampToValueAtTime(.001,t+.2);o.start(t);o.stop(t+.22)}}catch{}try{navigator.vibrate&&navigator.vibrate([200,100,200])}catch{}}
+function startRest(){unlockAudio();const s=S.rest[ex]||90;rest={end:Date.now()+s*1000,total:s,done:false};clearInterval(rt);rt=setInterval(tickRest,250)}
+function tickRest(){
+  if(!rest||rest.done){clearInterval(rt);return}
+  const rem=Math.max(0,Math.ceil((rest.end-Date.now())/1000)),t=$('#rt'),b=$('#rb');
+  if(t)t.textContent=mmss(rem);if(b)b.style.width=Math.min(100,rem/rest.total*100)+'%';
+  if(rem<=0){rest.done=true;clearInterval(rt);beep();const c=$('#rbn');if(c)c.innerHTML=RestBanner()}
+}
 
 /* ---------- passcode (privacy lock) ---------- */
 async function hashPin(pin,salt){const e=new TextEncoder(),k=await crypto.subtle.importKey('raw',e.encode(pin),'PBKDF2',false,['deriveBits']);const b=await crypto.subtle.deriveBits({name:'PBKDF2',salt:e.encode(salt),iterations:150000,hash:'SHA-256'},k,256);return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('')}

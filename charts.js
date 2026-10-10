@@ -16,8 +16,6 @@ function Line(pts,o={}){
   return `<svg class="chart" viewBox="0 0 ${W} ${H}" role="img">${zones}${band}${area}<path d="${d}" fill="none" stroke="${C}" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"/>${dots}${xl}</svg>`;
 }
 const d7=()=>[...Array(7)].map((_,i)=>addDays(today(),i-6));
-const chBmi=()=>{const e=Object.entries(S.wlog).sort((a,b)=>a[0].localeCompare(b[0])).slice(-12),pts=e.map(([d,x])=>({l:fmt(d),v:x.w/Math.pow(x.h/100,2)}));
-  return Line(pts,{f:v=>v.toFixed(1),zones:BZ,minspan:4,col:bmiCol(pts[pts.length-1].v)})+`<div class="legend" style="flex-wrap:wrap;gap:4px 12px">${[['Under','#60a5fa'],['Healthy','#10b981'],['Over','#f59e0b'],['Obese','#ef4444']].map(([n,c])=>`<span><i style="background:${c}"></i>${n}</span>`).join('')}</div>${pts.length<2?'<p class="sm" style="margin:8px 0 0;text-align:center">The line grows as your weight is logged on more days.</p>':''}`};
 const chSt=()=>Line(d7().map(d=>({l:dn(d),v:(S.health[d]||{}).steps||0})),{lo:0});
 const chBn=()=>Line(d7().map(d=>({l:dn(d),v:(S.health[d]||{}).burn||0})),{lo:0});
 const chEat=()=>Line(d7().map(d=>({l:dn(d),v:kcalOn(d)})),{lo:0,band:[LO,HI]});

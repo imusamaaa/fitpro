@@ -4,17 +4,22 @@
 /* ---------- views ---------- */
 const Wp=(k,label)=>`<div class="wp"><span class="sm">${label}</span><div class="box"><div class="band"></div><div class="sc" id="w-${k}"></div></div><button class="btn" data-a="done">Done</button></div>`;
 const Chip=(k,label,val,id)=>`<button class="chip ${edit===k?'on':''}" data-a="edit" data-k="${k}"><span class="sm">${label}</span><b id="${id}">${val}</b></button>`;
+const BmiVal=()=>{const b=bmi();if(b==null)return '<span class="sm">Add your weight and height</span>';
+  if(S.hideBmi)return `<span class="big" style="letter-spacing:4px">••••</span><button class="link" style="padding:0" data-a="hidebmi" aria-label="Show BMI">Show</button>`;
+  const c=bmiCol(b);return `<span class="big" style="color:${c}">${b.toFixed(1)}</span><span class="pill" style="color:${c};background:${c}26">${bmiCat(b)}</span><button class="link" style="padding:0" data-a="hidebmi" aria-label="Hide BMI">Hide</button>`};
+const RestBanner=()=>{if(!rest)return '';
+  if(rest.done)return `<div class="rb done"><span><b>Rest finished</b> <span class="sm">– start your next set</span></span><button class="btn alt" data-a="rskip">Dismiss</button></div>`;
+  const rem=Math.max(0,Math.ceil((rest.end-Date.now())/1000));
+  return `<div class="rb"><div class="rbh"><span class="sm">Rest</span><b class="rt" id="rt">${mmss(rem)}</b></div><div class="prog"><i id="rb" style="width:${Math.min(100,rem/rest.total*100)}%;background:var(--acc)"></i></div><div class="row" style="margin:8px 0 0"><button class="btn alt" data-a="radd">+15s</button><button class="btn alt" data-a="rskip">Skip</button></div></div>`};
 function Dash(){
   const t=today(), b=bmi(), kc=kcalOn(t), ws=wkStart(t), h=S.health[t]||{}, dset=new Set(S.logs.map(l=>l.date));
   const weeks=[...Array(8)].map((_,i)=>addDays(ws,(i-7)*7));
   const cnt=weeks.map(w=>[...Array(7)].filter((_,d)=>dset.has(addDays(w,d))).length);
   const col=kc>=LO&&kc<=HI?'var(--acc)':kc>0?'var(--org)':'var(--bar)';
   return `<h2>Dashboard</h2><p class="sub">Your week at a glance.</p>
-  <div class="card"><h3>BMI</h3><p class="sm" style="margin:0">Tap weight or height to change it.</p>
-   <div class="chips">${Chip('bw','Weight',Number(S.weight).toFixed(1)+' kg','v-bw')}${Chip('bh','Height',S.height+' cm','v-bh')}</div>
-   ${edit==='bw'?Wp('bw','Weight (kg)'):edit==='bh'?Wp('bh','Height (cm)'):''}
-   <p style="margin:6px 0 0"><span class="big" id="bmi" style="color:${bmiCol(b)}">${b.toFixed(1)}</span><span class="pill" id="bmic" style="color:${bmiCol(b)};background:${bmiCol(b)}26">${bmiCat(b)}</span></p>
-   <h3 style="margin-top:16px">BMI over time</h3><div id="ch-bmi">${chBmi()}</div></div>
+  <div class="card bmi"><div class="bmir"><div><span class="sm">BMI</span><div class="bv" id="bmiw">${BmiVal()}</div></div>
+   <div class="chips">${Chip('bw','Weight',S.weight?Number(S.weight).toFixed(1)+' kg':'Set','v-bw')}${Chip('bh','Height',S.height?S.height+' cm':'Set','v-bh')}</div></div>
+   ${edit==='bw'?Wp('bw','Weight (kg)'):edit==='bh'?Wp('bh','Height (cm)'):''}</div>
   <div class="card"><h3>This week (Sun–Thu)</h3><div class="days">${['Sun','Mon','Tue','Wed','Thu'].map((n,i)=>`<div class="${dset.has(addDays(ws,i))?'d':''}">${n}</div>`).join('')}</div>
    <div class="prog"><i style="width:${Math.min(100,cnt[7]/GOAL*100)}%;background:var(--acc)"></i></div><p class="sm" style="margin:0">${cnt[7]} of ${GOAL} days logged</p></div>
   <div class="card"><h3>Today's activity</h3><p class="sm" style="margin:0">Tap a value to change it.</p>
@@ -35,16 +40,22 @@ function Work(){
   if(!ex) return `<button class="link" data-a="back">‹ All muscle groups</button><h2>${muscle}</h2><p class="sub">Pick an exercise to log.</p>
    ${exNames(muscle).map(e=>{const p=prev(e);return `<button class="item" data-a="ex" data-e="${esc(e)}"><span>${esc(e)}</span><span class="sm">${p?'last '+fmt(p.date)+' ':''}›</span></button>`}).join('')}
    <div class="row"><input id="newex" placeholder="Add your own exercise" aria-label="New exercise name"><button class="btn alt" style="flex:0 0 auto" data-a="addex">Add</button></div>`;
-  const p=prev(ex), I=info(ex,muscle), done=S.logs.filter(l=>l.ex===ex&&l.date===t), nm=a=>a.map(m=>NAMES[m]).join(', ')||'–';
+  const p=prev(ex), I=info(ex,muscle), e=todayEntry(), sets=e?e.sets:[], n=sets.length, rs=S.rest[ex]||90, nm=a=>a.map(m=>NAMES[m]).join(', ')||'–';
+  const tick='<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7"/></svg>';
   return `<button class="link" data-a="back">‹ ${muscle}</button><h2>${esc(ex)}</h2>
   <div class="card">${Body(I.p,I.s)}<p class="sm" style="text-align:center;margin:10px 0 0"><b style="color:var(--acc)">${nm(I.p)}</b>${I.s.length?' · '+nm(I.s):''}</p></div>
   <div class="card"><h3>Log sets</h3><div class="ref">${Ref(p)}</div>
-   ${draft.sets.map((s,i)=>`<div class="sr"><span class="sm" style="width:42px">Set ${i+1}</span>${['weight','reps'].map(k=>`<button class="chip ${draft.open&&draft.open.i===i&&draft.open.k===k?'on':''}" data-a="se" data-i="${i}" data-k="${k}"><b id="c-${i}-${k}">${s[k]}</b> ${k==='weight'?'kg':'reps'}</button>`).join('')}<button class="x" data-a="delset" data-i="${i}" aria-label="Remove set ${i+1}">✕</button></div>`).join('')}
-   <p class="sm" style="margin:8px 0 0">Tap a weight or reps value to change it.</p>
-   ${draft.open?Wp('ex',`Set ${draft.open.i+1} · ${draft.open.k==='weight'?'Weight (kg)':'Reps'}`):''}
-   <textarea id="note" rows="2" data-f="note" style="margin-top:14px" placeholder="Notes (form cues, how it felt)">${esc(draft.note)}</textarea>
-   <div class="row">${p?'<button class="btn alt" data-a="copy">Copy last</button>':''}<button class="btn alt" data-a="addset">Add set</button><button class="btn" data-a="save">Save</button></div></div>
-  <div class="card"><h3>Logged today</h3>${done.length?done.map(Log).join(''):'<p class="sm" style="margin:0">Nothing saved for this exercise today.</p>'}</div>`;
+   ${sets.map((s,i)=>`<div class="ls"><span><span style="color:var(--acc);font-weight:700">✓</span> <b>Set ${i+1}</b> · ${s.weight} kg × ${s.reps}</span><button class="x" data-a="delset" data-i="${i}" aria-label="Remove set ${i+1}">✕</button></div>`).join('')}
+   <div id="rbn">${RestBanner()}</div>
+   <div class="cur"><span class="sm" style="width:44px">Set ${n+1}</span>
+    <button class="chip ${draft.open==='weight'?'on':''}" data-a="se" data-k="weight"><b id="c-weight">${draft.weight}</b> kg</button>
+    <button class="chip ${draft.open==='reps'?'on':''}" data-a="se" data-k="reps"><b id="c-reps">${draft.reps}</b> reps</button>
+    <button class="tick" data-a="tick" aria-label="Save set ${n+1}">${tick}</button></div>
+   ${draft.open==='weight'||draft.open==='reps'?Wp('ex',draft.open==='weight'?'Weight (kg)':'Reps'):''}
+   <p class="sm" style="margin:0">Pick weight and reps, then tap the tick to save the set.</p>
+   <div class="restrow"><span class="sm">Rest between sets</span><button class="chip ${draft.open==='rest'?'on':''}" data-a="se" data-k="rest"><b id="c-rest">${mmss(rs)}</b></button></div>
+   ${draft.open==='rest'?Wp('ex','Rest time (min:sec)'):''}
+   <textarea id="note" rows="2" data-f="note" placeholder="Notes (form cues, how it felt)">${esc(draft.note)}</textarea></div>`;
 }
 function Meal(){
   const t=today(), days=[...Array(7)].map((_,i)=>addDays(wkStart(t),i)), sel=mealDay||t, list=S.meals.filter(m=>m.date===sel);
@@ -75,12 +86,14 @@ function wheel(id,vals,cur,cb,fv=v=>v){
   el.scrollTop=i*40; mark(el,i);
   el.onscroll=()=>{const j=Math.min(vals.length-1,Math.max(0,Math.round(el.scrollTop/40)));if(j===el._i)return;mark(el,j);cb(vals[j])};
 }
-function initWheels(){const o=draft.open;if(o)wheel('ex',WV[o.k],draft.sets[o.i][o.k],v=>{draft.sets[o.i][o.k]=v;const c=$(`#c-${o.i}-${o.k}`);if(c)c.textContent=v})}
+function initWheels(){const o=draft.open;if(!o)return;
+  if(o==='rest')wheel('ex',WV.rs,S.rest[ex]||90,v=>{S.rest[ex]=v;$('#c-rest').textContent=mmss(v);saveSoon()},mmss);
+  else wheel('ex',WV[o],draft[o],v=>{draft[o]=v;$('#c-'+o).textContent=v})}
 function initDash(){
   const t=today(), h=S.health[t]||{};
-  const body=()=>{S.wlog[t]={w:S.weight,h:S.height};paintBmi();$('#ch-bmi').innerHTML=chBmi();saveSoon()};
-  if(edit==='bw')wheel('bw',WV.bw,S.weight,v=>{S.weight=v;$('#v-bw').textContent=v.toFixed(1)+' kg';body()},v=>v.toFixed(1));
-  if(edit==='bh')wheel('bh',WV.bh,S.height,v=>{S.height=v;$('#v-bh').textContent=v+' cm';body()});
+  const body=()=>{paintBmi();saveSoon()};
+  if(edit==='bw'){if(!S.weight)S.weight=70;$('#v-bw').textContent=S.weight.toFixed(1)+' kg';body();wheel('bw',WV.bw,S.weight,v=>{S.weight=v;$('#v-bw').textContent=v.toFixed(1)+' kg';body()},v=>v.toFixed(1))}
+  if(edit==='bh'){if(!S.height)S.height=170;$('#v-bh').textContent=S.height+' cm';body();wheel('bh',WV.bh,S.height,v=>{S.height=v;$('#v-bh').textContent=v+' cm';body()})}
   if(edit==='st')wheel('st',WV.st,h.steps||0,v=>{S.health[t]={...S.health[t],steps:v};$('#v-st').textContent=v.toLocaleString();$('#ch-st').innerHTML=chSt();saveSoon()},v=>v.toLocaleString());
   if(edit==='bn')wheel('bn',WV.bn,h.burn||0,v=>{S.health[t]={...S.health[t],burn:v};$('#v-bn').textContent=v+' kcal';$('#ch-bn').innerHTML=chBn();saveSoon()});
 }

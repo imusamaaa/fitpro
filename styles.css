@@ -55,3 +55,18 @@ label{display:flex;justify-content:space-between;align-items:center;gap:10px;mar
 .dn{width:62px;text-align:left}.dn small{display:block;color:var(--mute);font-size:11px}.dbar{flex:1;height:8px;background:var(--bg);border-radius:9px;overflow:hidden}.dbar i{display:block;height:100%}.dr b{width:56px;text-align:right}
 .sc div{height:40px;line-height:40px;scroll-snap-align:center;font-size:22px;color:var(--mute)}.sc .on{color:#fff;font-weight:600}
 @media(prefers-reduced-motion:reduce){.brand path,.drawer{animation:none}}
+
+/* compact BMI card, one-set-at-a-time logging, rest timer */
+.card.bmi{padding:12px 14px}
+.bmir{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.bmir .chips{margin:0;flex:0 0 auto}.bmir .chip{flex:0 0 auto;padding:8px 12px}.bmir .chip b{font-size:16px}
+.bv{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.bv .big{font-size:30px}.bv .pill{margin:0}
+.cur{display:flex;align-items:center;gap:8px;margin:12px 0}
+.cur .chip,.restrow .chip{flex:1;display:flex;align-items:baseline;gap:5px;justify-content:center}
+.cur .chip b,.restrow .chip b{display:inline;font-size:19px}
+.tick{width:54px;height:54px;border-radius:50%;border:0;background:var(--acc);color:#04130d;display:grid;place-items:center;cursor:pointer;flex:0 0 auto}
+.ls{display:flex;justify-content:space-between;align-items:center;padding:8px 12px;border-radius:12px;background:rgba(16,185,129,.1);margin-bottom:6px}
+.restrow{display:flex;justify-content:space-between;align-items:center;margin:10px 0}.restrow .chip{flex:0 0 auto;padding:8px 18px}
+.rb{background:var(--bg);border:1px solid var(--acc);border-radius:14px;padding:12px 14px;margin:10px 0}
+.rb.done{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.rbh{display:flex;justify-content:space-between;align-items:baseline}.rt{font-size:34px;color:#fff;font-variant-numeric:tabular-nums}

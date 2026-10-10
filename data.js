@@ -32,7 +32,7 @@ function Body(P,Q){
 }
 
 /* ---------- storage + helpers ---------- */
-const DEF={weight:95,height:169,logs:[],meals:[],health:{},custom:{},wlog:{}};
+const DEF={weight:null,height:null,logs:[],meals:[],health:{},custom:{},rest:{},hideBmi:false};
 let S; try{S={...DEF,...JSON.parse(localStorage.getItem(KEY))}}catch{S={...DEF}}
 const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch{alert('Storage is full or blocked – export a backup.')}};
 let _st;const saveSoon=()=>{clearTimeout(_st);_st=setTimeout(save,300)};
@@ -43,18 +43,20 @@ const ld=s=>new Date(s+'T00:00:00'), today=()=>iso(new Date());
 const addDays=(s,n)=>{const d=ld(s);d.setDate(d.getDate()+n);return iso(d)};
 const wkStart=s=>addDays(s,-ld(s).getDay());
 const fmt=s=>ld(s).toLocaleDateString(undefined,{day:'numeric',month:'short'});
+const mmss=s=>Math.floor(s/60)+':'+String(s%60).padStart(2,'0');
 const kcalOn=d=>S.meals.filter(m=>m.date===d).reduce((a,m)=>a+m.kcal,0);
-const bmi=()=>S.weight/Math.pow(S.height/100,2);
+const bmi=()=>S.weight&&S.height?S.weight/Math.pow(S.height/100,2):null;
 const bmiCat=b=>b<18.5?'Underweight':b<25?'Healthy':b<30?'Overweight':'Obese';
 const bmiCol=b=>b<18.5?'#60a5fa':b<25?'#10b981':b<30?'#f59e0b':'#ef4444';
 const BZ=[[0,18.5,'#60a5fa'],[18.5,25,'#10b981'],[25,30,'#f59e0b'],[30,100,'#ef4444']];
-function paintBmi(){const b=bmi(),c=bmiCol(b),n=$('#bmi'),p=$('#bmic');n.textContent=b.toFixed(1);n.style.color=c;p.textContent=bmiCat(b);p.style.color=c;p.style.background=c+'26'}
+function paintBmi(){const e=$('#bmiw');if(e)e.innerHTML=BmiVal()}
 const sets2=a=>a.map(s=>`${s.reps}×${s.weight}kg`).join(' · ');
 const prev=ex=>S.logs.filter(l=>l.ex===ex&&l.date<today()).sort((a,b)=>b.date.localeCompare(a.date)||b.id-a.id)[0]||null;
 const Ref=p=>p?`Last session (${fmt(p.date)}): ${sets2(p.sets)}${p.note?'<br>Note: '+esc(p.note):''}`:'No earlier session for this exercise yet.';
-S.wlog=S.wlog||{};if(!S.wlog[today()])S.wlog[today()]={w:S.weight,h:S.height};
 
 /* ---------- state ---------- */
 let tab='dash', muscle=null, ex=null, draft=null, menu=false, mealDay=null, edit=null, mealKcal=0, mealName='', medit=false, locked=!!S.lock;
-function newDraft(){const p=prev(ex);draft={open:null,note:'',sets:p?p.sets.map(s=>({...s})):[0,1,2].map(()=>({weight:20,reps:10}))}}
-const WV={weight:[...Array(501)].map((_,i)=>i/2),reps:[...Array(50)].map((_,i)=>i+1),bw:[...Array(1601)].map((_,i)=>(400+i)/10),bh:[...Array(101)].map((_,i)=>120+i),st:[...Array(61)].map((_,i)=>i*500),bn:[...Array(81)].map((_,i)=>i*50),mk:[...Array(201)].map((_,i)=>i*10)};
+const todayEntry=()=>S.logs.filter(l=>l.ex===ex&&l.date===today()).sort((a,b)=>b.id-a.id)[0]||null;
+function newDraft(){const p=prev(ex),e=todayEntry(),n=e?e.sets.length:0,w=(p&&p.sets[n])||(e&&e.sets[n-1])||(p&&p.sets[0])||{weight:20,reps:10};draft={open:null,note:e?(e.note||''):'',weight:w.weight,reps:w.reps}}
+let rest=null, rt=null;
+const WV={weight:[...Array(501)].map((_,i)=>i/2),reps:[...Array(50)].map((_,i)=>i+1),bw:[...Array(1601)].map((_,i)=>(400+i)/10),bh:[...Array(101)].map((_,i)=>120+i),st:[...Array(61)].map((_,i)=>i*500),bn:[...Array(81)].map((_,i)=>i*50),mk:[...Array(201)].map((_,i)=>i*10),rs:[...Array(20)].map((_,i)=>(i+1)*15)};
